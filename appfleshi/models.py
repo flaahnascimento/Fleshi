@@ -1,10 +1,18 @@
 from email.policy import default
 
-from appfleshi import database
+from flask_login import UserMixin
+
+from appfleshi import database, login_manager
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-class User(database.Model):
+@login_manager.user_loader # consultando se tem ou não aquele usuário
+def load_user(user_id):
+    return User.query.get(int(user_id)) # consultado a tabela do banco
+
+
+
+class User(database.Model, UserMixin):
     #metodo do banco de dados()
     id = database.Column(database.Integer, primary_key=True)
     username = database.Column(database.String(20), unique=True)
