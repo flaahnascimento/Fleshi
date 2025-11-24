@@ -9,8 +9,21 @@
     </title>
 </head>
 {% block body %}
-<body>
-    <h1>Fléshi -Página Inicial</h1>
-</body>
+    <body>
+        <h1>Fléshi -Página Inicial</h1>
+
+        {% block form %}
+            <form action="post">
+                {{ form.csrf_token }}
+                {{ form.email.label() }}
+                {{ form.email() }}
+
+                {{ form.password.label() }}
+                {{ form.password () }}
+
+                {{ form.submit() }}
+            </form>
+        {% enblock %}
+    </body>
 {% endblock %}
 </html>

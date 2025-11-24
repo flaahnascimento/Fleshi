@@ -1,0 +1,24 @@
+{{% extends "homepage.html" %}}
+
+{% block title %}
+  Fléshi - Criar Conta
+{% endblock %}
+
+{% block form %}
+    <form action="post">
+            {{ form.csrf_token }}
+            {{ form.email.label() }}
+            {{ form.email() }}
+
+            {{ form.username.label }}
+            {{ form.password() }}
+
+            {{ form.confirm_password.label() }}
+            {{ form.confirm_password() }}
+
+            {{ form.password.label() }}
+            {{ form.password () }}
+
+            {{ form.submit() }}
+    </form>
+{% endblock %}
