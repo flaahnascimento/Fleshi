@@ -13,7 +13,7 @@
         <h1>Fléshi -Página Inicial</h1>
 
         {% block form %}
-            <form action="post">
+            <form method="post">
                 {{ form.csrf_token }}
                 {{ form.email.label() }}
                 {{ form.email() }}
@@ -23,7 +23,7 @@
 
                 {{ form.submit() }}
             </form>
-        {% enblock %}
+        {% endblock %}
     </body>
 {% endblock %}
 </html>
