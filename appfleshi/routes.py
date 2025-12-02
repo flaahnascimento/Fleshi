@@ -5,7 +5,6 @@ from appfleshi import app, database, bcrypt
 from appfleshi.models import User, Photo
 import os
 from werkzeug.utils import secure_filename
-
 from appfleshi import app
 
 @app.route('/', methods=['GET', 'POST'])
@@ -15,7 +14,7 @@ def homepage():
         user = User.query.filter_by(email=login_form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, login_form.password.data):
             login_user(user)
-            return redirect(url_for('profile', user_id=user.id))
+            return redirect(url_for('feed', user_id=user.id))
     return render_template('homepage.html', form=login_form)
 
 @app.route("/createaccount", methods=['GET', 'POST'])
@@ -48,9 +47,14 @@ def profile(user_id):
         user = User.query.get(int(user_id))
         return render_template('profile.html', user=user, form=None)
 
-
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('homepage'))
+
+@app.route("/feed")
+@login_required
+def feed():
+    photos = Photo.query.order_by(Photo.upload_date.desc()).all()
+    return render_template('feed.html', photos=photos)
