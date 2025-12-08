@@ -22,6 +22,11 @@
 
         {% for photo in user.photos %}
             <img src="{{ url_for('static', filename='posts_photos/' ~ photo.file_name) }}" alt="imagem">
+
+            {% if user == current_user %}
+                <a href=" {{ url_for('delete_photo', photo_id = photo.id) }} " class="btn btn-danger"> 🗑️ Excluir mídia </a>
+            {% endif %}
+
         {% endfor %}
     </body>
 {% endblock %}

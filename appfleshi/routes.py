@@ -2,7 +2,7 @@ from flask import render_template, url_for, redirect
 from flask_login import login_required, login_user, logout_user, current_user
 from appfleshi.forms import LoginForm, RegisterForm, PhotoForm
 from appfleshi import app, database, bcrypt
-from appfleshi.models import User, Photo
+from appfleshi.models import User, Photo, Like
 import os
 from werkzeug.utils import secure_filename
 from appfleshi import app
@@ -58,3 +58,40 @@ def logout():
 def feed():
     photos = Photo.query.order_by(Photo.upload_date.desc()).all()
     return render_template('feed.html', photos=photos)
+
+@app.route("/deletar_photo/<photo_id>")
+@login_required
+def delete_photo(photo_id):
+    photo = Photo.query.get(photo_id) # busquei a foto pelo id
+    if not photo: # se a foto nao existir
+        return redirect(url_for('profile', user_id=current_user.id)) # volta para o perfil do usuario
+    if photo.user_id != current_user.id: # se a foto for diferente do que usuario tem
+        return redirect(url_for('profile', user_id=current_user.id)) # volta para o perfil do usuario
+    path = os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config["UPLOAD_FOLDER"], photo.file_name)
+    if os.path.exists(path): # se o caminho existir
+        os.remove(path) # remove ela
+    database.session.delete(photo) # apagar a foto
+    database.session.commit() # certeza que apaguei
+    return redirect(url_for('profile', user_id=current_user.id)) # volta para o perfil do usuario
+
+
+@app.route("/like/<photo_id>")
+@login_required
+def like_photo(photo_id):
+    photo = Photo.query.get(photo_id) # busquei a foto pelo id
+    if not photo: # se a foto nao existir
+        return redirect(url_for('profile', user_id=current_user.id)) # volta para o perfil do usuario
+
+
+    if photo.user_id != current_user.id: # se a foto for diferente do que usuario tem
+        return redirect(url_for('profile', user_id=current_user.id)) # volta para o perfil do usuario
+    path = os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config["UPLOAD_FOLDER"], photo.file_name)
+    if os.path.exists(path): # se o caminho existir
+        os.remove(path) # remove ela
+    database.session.delete(photo) # apagar a foto
+    database.session.commit() # certeza que apaguei
+    return redirect(url_for('profile', user_id=current_user.id)) # volta para o perfil do usuario
+
+
+
+
