@@ -29,14 +29,15 @@
             {{ form.confirm_password.label(class="form-label") }}
             {{ form.confirm_password(class="form-control") }}
 
-<!--            {% if form.password.errors %}-->
-<!--                {% for erro in form.password.errors %}-->
-<!--                    <p class="alert alert-danger">{{ erro }}</p>-->
-<!--                {% endfor %}-->
-<!--            {% endif %}-->
-
             {{ form.password.label(class="form-label") }}
             {{ form.password (class="form-control") }}
+
+
+            {% if form.password.errors %}
+                {% for erro in form.password.errors %}
+                    <p class="alert alert-danger">{{ erro }}</p>
+                {% endfor %}
+            {% endif %}
 
             {{ form.submit() }}
     </form>

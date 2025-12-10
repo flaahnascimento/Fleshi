@@ -2,7 +2,7 @@ from email.policy import default
 
 from flask_login import UserMixin
 
-from appfleshi import database, login_manager
+from appfleshi import db, login_manager
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
@@ -12,24 +12,39 @@ def load_user(user_id):
 
 
 
-class User(database.Model, UserMixin):
+class User(db.Model, UserMixin):
     #metodo do banco de dados()
-    id = database.Column(database.Integer, primary_key=True)
-    username = database.Column(database.String(20), unique=True)
-    email = database.Column(database.String(100), unique=True, nullable=False)
-    password = database.Column(database.String(60), unique=True, nullable=False)
-    photos = database.relationship("Photo", backref="user", lazy=True) #lista de fotos, cada foto é um objeto
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+    photos = db.relationship("Photo", backref="user", lazy=True) #lista de fotos, cada foto é um objeto
+    likes = db.relationship("Like", backref="user", lazy=True)
+    reposts = db.relationship("Repost", backref="user", lazy=True)
 
-class Photo(database.Model):
-    id = database.Column(database.Integer, primary_key=True)
-    file_name = database.Column(database.String(255), default= "default.png")
-    upload_date = database.Column(database.DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
-    user_id = database.Column(database.Integer, database.ForeignKey("user.id"), nullable=False)
-    likes = database.Column(database.Integer, default=0)
+class Photo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    file_name = db.Column(db.String(255), default= "default.png")
+    upload_date = db.Column(db.DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    Like = db.relationship("Like", backref="photo")
+    reposts = db.relationship("Repost", backref="photo", lazy=True)
+    likes = db.relationship("Like", backref="photo", lazy=True)
 
-class Like(database.Model):
-    id = database.Column(database.Integer, primary_key=True)
-    user_id = database.Column(database.Integer, database.ForeignKey("user.id"), nullable=False)
-    photo_id = database.Column(database.Integer, database.ForeignKey("photo.id"), nullable=False)
 
+class Like(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    photo_id = db.Column(db.Integer, db.ForeignKey("photo.id"), nullable=False)
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(500), nullable=False) # texto comentario
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False) # quem comentou
+    photo_id = db.Column(db.Integer, db.ForeignKey("photo.id"), nullable=False) # qual foto comentada
+
+class Repost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False) # quem comentou
+    photo_id = db.Column(db.Integer, db.ForeignKey("photo.id"), nullable=False) # qual foto comentada
 

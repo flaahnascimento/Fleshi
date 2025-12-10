@@ -6,27 +6,55 @@
 
 {% block body %}
     <body>
-        {% include "navbar.html"%}
+        {% include "navbar.html" %}
         <h1>Perfil do usuário: {{ user.username }}</h1>
 
         {% if form %}
             <form method="post" enctype="multipart/form-data">
                 {{ form.csrf_token }}
-
                 {{ form.photo() }}
                 {{ form.submit() }}
             </form>
         {% endif %}
 
-        <a href=" {{ url_for('logout') }}">Sair</a>
+        <a href="{{ url_for('logout') }}">Sair</a>
 
         {% for photo in user.photos %}
             <img src="{{ url_for('static', filename='posts_photos/' ~ photo.file_name) }}" alt="imagem">
 
-            {% if user == current_user %}
-                <a href=" {{ url_for('delete_photo', photo_id = photo.id) }} " class="btn btn-danger"> 🗑️ Excluir mídia </a>
-            {% endif %}
+            <div class="excluir_foto">
+                {% if user == current_user %}
+                    <a class="btn btn-secondary btn-sm" href="{{ url_for('delete_photo', photo_id=photo.id) }}" class="btn btn-danger"> 🗑️ Excluir mídia </a>
+                {% endif %}
+            </div>
 
+            <a class="btn btn-secondary btn-sm" href="{{ url_for('like_photo', photo_id=photo.id) }}" class="btn btn-danger"> 🗑❤️ Curtir </a>
+
+            <div class="quem_curtiu">
+                {% if photo.Like|length > 0 %}
+                    <small style="color: #666;">
+                        ❤️ Curtido por:
+                    </small>
+                    {% for like in photo.Like %}
+                        <span class="badge bg-light text-dark m-1">{{ like.user.username }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="card-body">
+                {% for comentario in photo.Comments %}
+                    <p>{{ comentario.text }}</p>
+                {% endfor %}
+
+                <form action="{{ url_for('comments_photo', photo_id=photo.id) }}" method="POST">
+                    <input type="text" name="text" placeholder="Deixe um comentário para {{ photo.user.username }}">
+                    <button type="submit" class="btn btn-primary btn-sm">⬆️</button>
+                </form>
+            </div>
+
+            <div class="repostar">
+                <a class="btn btn-secondary btn-sm" href="{{ url_for('repost_photo', photo_id=photo.id) }}">🔁 Repostar</a>
+            </div>
         {% endfor %}
     </body>
 {% endblock %}
