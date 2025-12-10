@@ -1,46 +1,55 @@
 {% extends "homepage.html" %}
 
-
 {% block title %}
   Fléshi - Criar Conta
 {% endblock %}
 
 {% block form %}
     <form method="post">
-            {{ form.csrf_token }}
+        {{ form.csrf_token }}
+
+        <div class="mb-3">
             {{ form.email.label(class="form-label") }}
-            {{ form.email() }}
+            {{ form.email(class="form-control") }}
+        </div>
 
-            {% if form.email.errors %}
-                {% for erro in form.email.errors %}
-                    <p class="alert alert-danger">{{ erro }}</p>
-                {% endfor %}
-            {% endif %}
+        {% if form.email.errors %}
+            {% for erro in form.email.errors %}
+                <div class="alert alert-danger">{{ erro }}</div>
+            {% endfor %}
+        {% endif %}
 
+        <div class="mb-3">
             {{ form.username.label(class="form-label") }}
             {{ form.username(class="form-control") }}
+        </div>
 
-            {% if form.username.errors %}
-                {% for erro in form.username.errors %}
-                    <p class="alert alert-danger">{{ erro }}</p>
-                {% endfor %}
-            {% endif %}
+        {% if form.username.errors %}
+            {% for erro in form.username.errors %}
+                <div class="alert alert-danger">{{ erro }}</div>
+            {% endfor %}
+        {% endif %}
 
+        <div class="mb-3">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
             {{ form.confirm_password.label(class="form-label") }}
             {{ form.confirm_password(class="form-control") }}
+        </div>
 
-            {{ form.password.label(class="form-label") }}
-            {{ form.password (class="form-control") }}
+        {% if form.confirm_password.errors %}
+            {% for erro in form.confirm_password.errors %}
+                <div class="alert alert-danger">{{ erro }}</div>
+            {% endfor %}
+        {% endif %}
 
-
-            {% if form.password.errors %}
-                {% for erro in form.password.errors %}
-                    <p class="alert alert-danger">{{ erro }}</p>
-                {% endfor %}
-            {% endif %}
-
-            {{ form.submit() }}
+        {{ form.submit(class="btn btn-primary w-100 mb-3") }}
     </form>
-<a href="{{ url_for('homepage') }}">Tem uma conta? Faça login</a>
-{% endblock %}
 
+    <a href="{{ url_for('homepage') }}" class="btn btn-outline-secondary w-100">
+        Tem uma conta? Faça login
+    </a>
+{% endblock %}

@@ -21,16 +21,16 @@ class User(db.Model, UserMixin):
     photos = db.relationship("Photo", backref="user", lazy=True) #lista de fotos, cada foto é um objeto
     likes = db.relationship("Like", backref="user", lazy=True)
     reposts = db.relationship("Repost", backref="user", lazy=True)
+    comments = db.relationship("Comment", backref="user", lazy=True)
 
 class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     file_name = db.Column(db.String(255), default= "default.png")
     upload_date = db.Column(db.DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    Like = db.relationship("Like", backref="photo")
     reposts = db.relationship("Repost", backref="photo", lazy=True)
-    likes = db.relationship("Like", backref="photo", lazy=True)
-
+    likes = db.relationship("Like", backref="photo", lazy=True, cascade="all, delete-orphan")
+    comments = db.relationship("Comment", backref="photo", lazy=True)
 
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)

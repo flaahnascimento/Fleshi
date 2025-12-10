@@ -5,7 +5,7 @@ from appfleshi import app, db, bcrypt
 from appfleshi.models import User, Photo, Like, Comment, Repost
 import os
 from werkzeug.utils import secure_filename
-from appfleshi import app
+
 
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
@@ -53,11 +53,23 @@ def logout():
     logout_user()
     return redirect(url_for('homepage'))
 
+
 @app.route("/feed")
 @login_required
 def feed():
-    photos = Photo.query.order_by(Photo.upload_date.desc()).all()
-    return render_template('feed.html', photos=photos)
+    photos = Photo.query.options(
+        db.joinedload(Photo.likes),
+        db.joinedload(Photo.comments),
+        db.joinedload(Photo.user),
+        db.joinedload(Photo.reposts)
+    ).order_by(Photo.upload_date.desc()).all()
+    reposted_photos = []
+    reposts = Repost.query.order_by(Repost.id.desc()).all()
+    for repost in reposts:
+        photo = Photo.query.get(repost.photo_id)
+        if photo:
+            reposted_photos.append({'photo': photo, 'reposted_by': repost.user, 'repost_date': repost.id})
+    return render_template('feed.html', photos=photos, reposted_photos=reposted_photos)
 
 @app.route("/deletar_photo/<photo_id>")
 @login_required
@@ -88,7 +100,7 @@ def like_photo(photo_id):
     novo_like = Like(user_id=current_user.id, photo_id=photo_id) # novo like, se nunca curtiu
     db.session.add(novo_like) # sobe na sessao
     db.session.commit() # salva no banco
-    return redirect(url_for('profile', user_id=current_user.id))
+    return redirect(url_for('feed', user_id=current_user.id))
 
 @app.route("/comment/<photo_id>", methods=['POST'])
 @login_required
@@ -100,29 +112,34 @@ def comments_photo(photo_id):
     if not text or text.strip() == "":
         flash("O comentário não pode estar vazio!", "warning")
         return redirect(url_for('profile', user_id=current_user.id))
+    if len(text.strip()) > 500:
+        flash("Ultrapassou o máximo 500 caracteres!", "warning")
+        return redirect(url_for('feed'))
     novo_comments = Comment (
         text=text.strip(), user_id=current_user.id, photo_id=photo_id
     )
     db.session.add(novo_comments)
     db.session.commit()
-    return redirect(url_for('profile', user_id=current_user.id))
+    return redirect(url_for('feed', user_id=current_user.id))
 
 @app.route("/repost/<photo_id>")
 @login_required
 def repost_photo(photo_id):
-    photo = Photo.query.get(photo_id) # busquei a foto pelo id
-    if not photo: # se a foto nao existir
-        return redirect(url_for('profile', user_id=current_user.id)) # volta para seu perfil
+    photo = Photo.query.get(photo_id)
+    if not photo:
+        flash("Foto não encontrada!", "danger")
+        return redirect(url_for('feed'))
     existe_repost = Repost.query.filter_by(user_id=current_user.id, photo_id=photo_id).first()  # verifica se ja repostou essa foto
     if existe_repost:  # se ja repostou
         flash("Você já repostou esta foto!", "info")
-        return redirect(url_for('profile', user_id=current_user.id))  # volta para seu perfil
+        return redirect(url_for('feed', user_id=current_user.id))  # volta para seu perfil
     novo_repost = Repost(
-        user_id=current_user.id, photo_id=photo_id, repost_id = photo_id
+        user_id=current_user.id, photo_id=photo_id
     )
     db.session.add(novo_repost)
     db.session.commit()
-    return redirect(url_for('profile', user_id=current_user.id))
+    flash(f"Foto repostada!", "success")
+    return redirect(url_for('feed', user_id=current_user.id))
 
 
 

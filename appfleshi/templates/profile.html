@@ -1,60 +1,212 @@
 {% extends "homepage.html" %}
 
 {% block title %}
-    Fléshi - perfil
+    Fléshi - Perfil de {{ user.username }}
 {% endblock %}
 
 {% block body %}
-    <body>
+    <body class="bg-light">
         {% include "navbar.html" %}
-        <h1>Perfil do usuário: {{ user.username }}</h1>
 
-        {% if form %}
-            <form method="post" enctype="multipart/form-data">
-                {{ form.csrf_token }}
-                {{ form.photo() }}
-                {{ form.submit() }}
-            </form>
-        {% endif %}
+        <div class="container mt-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <div class="rounded-circle bg-secondary mx-auto d-flex align-items-center justify-content-center"
+                                 style="width: 100px; height: 100px;">
+                                <i class="bi bi-person-fill text-white fs-1"></i>
+                            </div>
+                        </div>
 
-        <a href="{{ url_for('logout') }}">Sair</a>
+                        <div class="col-md-9">
+                            <h2 class="mb-1">{{ user.username }}</h2>
 
-        {% for photo in user.photos %}
-            <img src="{{ url_for('static', filename='posts_photos/' ~ photo.file_name) }}" alt="imagem">
+                            <div class="d-flex mb-3">
+                                <div class="me-4">
+                                    <strong class="d-block">{{ user.photos|length }}</strong>
+                                    <small class="text-muted">Posts</small>
+                                </div>
+                                <div class="me-4">
+                                    <strong class="d-block">{{ user.likes|length }}</strong>
+                                    <small class="text-muted">Curtidas</small>
+                                </div>
+                                <div class="me-4">
+                                    <strong class="d-block">{{ user.reposts|length }}</strong>
+                                    <small class="text-muted">Reposts</small>
+                                </div>
+                            </div>
 
-            <div class="excluir_foto">
-                {% if user == current_user %}
-                    <a class="btn btn-secondary btn-sm" href="{{ url_for('delete_photo', photo_id=photo.id) }}" class="btn btn-danger"> 🗑️ Excluir mídia </a>
-                {% endif %}
+                            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Sair</a>
+                        </div>
+                    </div>
+
+                    {% if form and user == current_user %}
+                    <div class="mt-4 pt-3 border-top">
+                        <h5 class="mb-3">Postar nova foto</h5>
+                        <form method="post" enctype="multipart/form-data">
+                            {{ form.csrf_token }}
+                            <div class="input-group">
+                                {{ form.photo(class="form-control") }}
+                                {{ form.submit(class="btn btn-primary") }}
+                            </div>
+                            <small class="text-muted">Selecione uma imagem para postar</small>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
 
-            <a class="btn btn-secondary btn-sm" href="{{ url_for('like_photo', photo_id=photo.id) }}" class="btn btn-danger"> 🗑❤️ Curtir </a>
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="mb-3">Publicações de {{ user.username }}</h4>
 
-            <div class="quem_curtiu">
-                {% if photo.Like|length > 0 %}
-                    <small style="color: #666;">
-                        ❤️ Curtido por:
-                    </small>
-                    {% for like in photo.Like %}
-                        <span class="badge bg-light text-dark m-1">{{ like.user.username }}</span>
-                    {% endfor %}
-                {% endif %}
+                    {% if user.photos %}
+                    <div class="row">
+                        {% for photo in user.photos %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card shadow-sm">
+                                <img src="{{ url_for('static', filename='posts_photos/' ~ photo.file_name) }}"
+                                     class="card-img-top"
+                                     alt="Post de {{ user.username }}"
+                                     style="height: 250px; object-fit: cover;"
+                                     onerror="this.src='https://via.placeholder.com/300x250?text=Imagem+Não+Encontrada'">
+
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <div>
+                                            <small class="text-muted">
+                                                <i class="bi bi-heart-fill text-danger"></i> {{ photo.likes|length }}
+                                            </small>
+                                            <small class="text-muted ms-2">
+                                                <i class="bi bi-chat"></i> {{ photo.comments|length }}
+                                            </small>
+                                            <small class="text-muted ms-2">
+                                                <i class="bi bi-repeat text-success"></i> {{ photo.reposts|length }}
+                                            </small>
+                                        </div>
+
+                                        {% if user == current_user %}
+                                        <div>
+                                            <a class="btn btn-sm btn-outline-danger"
+                                               href="{{ url_for('delete_photo', photo_id=photo.id) }}"
+                                               onclick="return confirm('Tem certeza que deseja excluir esta foto?')">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <a class="btn btn-outline-danger btn-sm"
+                                           href="{{ url_for('like_photo', photo_id=photo.id) }}">
+                                            ❤️ Curtir
+                                        </a>
+                                        <a class="btn btn-outline-success btn-sm"
+                                           href="{{ url_for('repost_photo', photo_id=photo.id) }}">
+                                            🔁 Repostar
+                                        </a>
+                                    </div>
+
+                                    {% if photo.comments %}
+                                    <div class="mt-2">
+                                        {% for comentario in photo.comments[:2] %}
+                                        <div class="mb-1">
+                                            <small>
+                                                <strong>{{ comentario.user.username }}:</strong>
+                                                {{ comentario.text[:30] }}{% if comentario.text|length > 30 %}...{% endif %}
+                                            </small>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-camera fs-1 text-muted"></i>
+                        <p class="text-muted">
+                            {% if user == current_user %}
+                            Você ainda não tem publicações. Faça seu primeiro post acima!
+                            {% else %}
+                            {{ user.username }} ainda não tem publicações.
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
 
-            <div class="card-body">
-                {% for comentario in photo.Comments %}
-                    <p>{{ comentario.text }}</p>
-                {% endfor %}
+            {% if user.reposts %}
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h4 class="mb-3">Reposts de {{ user.username }}</h4>
+                    <div class="row">
+                        {% for repost in user.reposts %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card shadow-sm border-success">
+                                <div class="card-header bg-success text-white py-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-repeat me-2"></i>
+                                        <small>Repostado por {{ user.username }}</small>
+                                    </div>
+                                </div>
 
-                <form action="{{ url_for('comments_photo', photo_id=photo.id) }}" method="POST">
-                    <input type="text" name="text" placeholder="Deixe um comentário para {{ photo.user.username }}">
-                    <button type="submit" class="btn btn-primary btn-sm">⬆️</button>
-                </form>
-            </div>
+                                <div class="card-header bg-light py-2">
+                                    <small>
+                                        <i class="bi bi-person me-1"></i>
+                                        Original de
+                                        <a href="{{ url_for('profile', user_id=repost.photo.user.id) }}"
+                                           class="text-decoration-none fw-bold">
+                                            {{ repost.photo.user.username }}
+                                        </a>
+                                    </small>
+                                </div>
 
-            <div class="repostar">
-                <a class="btn btn-secondary btn-sm" href="{{ url_for('repost_photo', photo_id=photo.id) }}">🔁 Repostar</a>
+                                <img src="{{ url_for('static', filename='posts_photos/' ~ repost.photo.file_name) }}"
+                                     class="card-img-top"
+                                     alt="Repost de {{ repost.photo.user.username }}"
+                                     style="height: 200px; object-fit: cover;"
+                                     onerror="this.src='https://via.placeholder.com/300x200?text=Imagem+Não+Encontrada'">
+
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <a class="btn btn-outline-danger btn-sm"
+                                           href="{{ url_for('like_photo', photo_id=repost.photo.id) }}">
+                                            ❤️ Curtir ({{ repost.photo.likes|length }})
+                                        </a>
+                                        <a class="btn btn-outline-success btn-sm"
+                                           href="{{ url_for('repost_photo', photo_id=repost.photo.id) }}">
+                                            🔁 Repostar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-        {% endfor %}
+            {% endif %}
+        </div>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+        <style>
+            .card {
+                border-radius: 10px;
+            }
+            .btn-outline-danger:hover {
+                background-color: #dc3545;
+                color: white;
+            }
+            .btn-outline-success:hover {
+                background-color: #198754;
+                color: white;
+            }
+        </style>
     </body>
 {% endblock %}

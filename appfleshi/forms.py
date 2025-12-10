@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FileField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
+
+from appfleshi import bcrypt
 from appfleshi.models import User
 
 class PhotoForm(FlaskForm):
@@ -17,12 +19,21 @@ class LoginForm(FlaskForm):
         if not user:
             raise ValidationError("Usuário não encontrado.")
         return None
+    # -------------------------------------------------------------------
+    def validate_password(self, password):
+        user = User.query.filter_by(email = self.email.data).first()
+        if not user:
+            raise ValidationError("Usuário e senha invalidos!")
+        if not bcrypt.check_password_hash(user.password, password.data):
+            raise ValidationError("Senha incorreta!")
+        return None
+    # -------------------------------------------------------------------
 
 class RegisterForm(FlaskForm): #cadastro
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     username = StringField('Nome de Usuário', validators=[DataRequired(), Length(min=2, max=20)])
     password = PasswordField('Senha', validators=[DataRequired(), Length(min=6, max=60)])
-    confirm_password = PasswordField('Confirmar Senha', validators=[DataRequired(), EqualTo('password')])
+    confirm_password = PasswordField('Confirmar Senha', validators=[DataRequired(), EqualTo('password', message="Senhas diferentes!")])
     submit = SubmitField('Criar Conta')
 
     def validate_email(self, email):
@@ -37,5 +48,4 @@ class RegisterForm(FlaskForm): #cadastro
             raise ValidationError("Usuário já cadastrado")
         return None
 
-    #def validate_password(self, password):
-        #se for diferente, ***********
+

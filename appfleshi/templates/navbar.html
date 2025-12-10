@@ -1,5 +1,10 @@
-    <nav>
-        <a href="{{ url_for('feed') }}">Feed</a>
-        <a href="{{ url_for('profile', user_id=current_user.id) }}">Perfil</a>
-        <a href="{{ url_for('logout') }}">Sair</a>
+    <nav class="navbar navbar-light bg-light border-bottom mb-3">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{{ url_for('feed') }}">Fléshi</a>
+            <div>
+                <a class="btn btn-outline-primary btn-sm me-2" href="{{ url_for('feed') }}">Feed</a>
+                <a class="btn btn-outline-secondary btn-sm me-2" href="{{ url_for('profile', user_id=current_user.id) }}">Perfil</a>
+                <a class="btn btn-outline-danger btn-sm" href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </div>
     </nav>
