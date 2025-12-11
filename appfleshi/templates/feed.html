@@ -4,48 +4,53 @@
     Fléshi - Feed
 {% endblock %}
 
+{% block feed_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
+{% endblock %}
+
 {% block body %}
     {% include "navbar.html"%}
 
-    <div class="container mt-3">
-        <h1 class="text-center mb-4">Feed Principal</h1>
+    <div class="feed-container">
+        <h1 class="feed-title">Momentos</h1>
 
         {% if photos %}
         <div class="row">
             {% for photo in photos %}
             <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white">
+                <div class="card feed-card">
+                    <div class="card-header">
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center">
-                                <div class="rounded-circle bg-secondary me-2"
-                                     style="width: 40px; height: 40px;"></div>
+                                <div class="user-avatar">
+                                    {{ photo.user.username[0]|upper }}
+                                </div>
                                 <div>
                                     <a href="{{ url_for('profile', user_id=photo.user_id)}}"
-                                       class="text-decoration-none text-dark fw-bold">
+                                       class="username-link">
                                         {{ photo.user.username }}
                                     </a>
                                 </div>
                             </div>
-                            <small class="text-muted">
+                            <small class="post-date">
                                 {{ photo.upload_date.strftime('%d/%m') }}
                             </small>
                         </div>
                     </div>
 
-                    <img src="{{ url_for('static', filename='posts_photos/' ~ photo.file_name) }}"
-                         class="card-img-top"
-                         alt="imagem"
-                         style="height: 250px; object-fit: cover;"
-                         onerror="this.src='https://via.placeholder.com/300x250?text=Imagem+Não+Encontrada'">
+                    <div class="card-img-container">
+                        <img src="{{ url_for('static', filename='posts_photos/' ~ photo.file_name) }}"
+                             alt="Foto de {{ photo.user.username }}"
+                             onerror="this.src='https://via.placeholder.com/400x300/f8f8f8/ccc?text=Imagem+Não+Encontrada'">
+                    </div>
 
                     <div class="card-body">
-                        <div class="d-flex justify-content-between mb-2">
-                            <a class="btn btn-outline-danger btn-sm"
+                        <div class="action-buttons">
+                            <a class="btn btn-like"
                                href="{{ url_for('like_photo', photo_id=photo.id) }}">
                                 ❤️ Curtir ({{ photo.likes|length }})
                             </a>
-                            <a class="btn btn-outline-success btn-sm"
+                            <a class="btn btn-repost"
                                href="{{ url_for('repost_photo', photo_id=photo.id) }}">
                                 🔁 Repostar ({{ photo.reposts|length }})
                             </a>
@@ -56,7 +61,7 @@
                             <small class="text-muted">
                                 🔁 Repostado por:
                                 {% for repost in photo.reposts %}
-                                    <span class="badge bg-light text-dark">
+                                    <span class="badge badge-user">
                                         {{ repost.user.username }}
                                     </span>
                                 {% endfor %}
@@ -69,7 +74,7 @@
                             <small class="text-muted">
                                 ❤️ Curtido por:
                                 {% for like in photo.likes %}
-                                    <span class="badge bg-light text-dark">
+                                    <span class="badge badge-user">
                                         {{ like.user.username }}
                                     </span>
                                 {% endfor %}
@@ -77,11 +82,11 @@
                         </div>
                         {% endif %}
 
-                        <div class="mt-3">
+                        <div class="comments-section">
                             {% for comentario in photo.comments %}
-                            <div class="mb-2">
+                            <div class="comment-item">
                                 <small>
-                                    <strong>{{ comentario.user.username }}:</strong>
+                                    <span class="comment-username">{{ comentario.user.username }}:</span>
                                     {{ comentario.text }}
                                 </small>
                             </div>
@@ -89,14 +94,14 @@
 
                             <form action="{{ url_for('comments_photo', photo_id=photo.id) }}"
                                   method="POST"
-                                  class="mt-2">
+                                  class="comment-form mt-3">
                                 <div class="input-group">
                                     <input type="text"
                                            name="text"
-                                           class="form-control form-control-sm"
-                                           placeholder="Comentar..."
+                                           class="form-control"
+                                           placeholder="Adicione um comentário..."
                                            required>
-                                    <button type="submit" class="btn btn-primary btn-sm">Enviar</button>
+                                    <button type="submit" class="btn">Enviar</button>
                                 </div>
                             </form>
                         </div>
@@ -106,8 +111,8 @@
             {% endfor %}
         </div>
         {% else %}
-        <div class="text-center py-5">
-            <h4 class="text-muted">Nenhuma foto no feed ainda</h4>
+        <div class="empty-feed">
+            <h4>Nenhuma foto no feed ainda</h4>
             <p>Seja o primeiro a postar!</p>
         </div>
         {% endif %}
