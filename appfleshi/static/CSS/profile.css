@@ -23,9 +23,8 @@ body.bg-light {
 }
 
 .container.mt-3 {
-    max-width: 1100px;
+    max-width: 680px;
     margin-top: 16px !important;
-    padding: 0 15px;
 }
 
 .card.shadow-sm {
@@ -48,8 +47,7 @@ body.bg-light {
     height: 120px;
     background: linear-gradient(135deg, var(--accent-purple), var(--light-purple));
     color: white;
-    font-size: 56px;
-    font-weight: 700;
+    font-size: 48px;
     margin: 0 auto;
 }
 
@@ -58,12 +56,12 @@ body.bg-light {
 }
 
 .rounded-circle.bg-secondary::after {
-    content: "{{ user.username[:1]|upper }}";
+    content: attr(style);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
+    font-size: 56px;
+    font-weight: 700;
 }
 
 h2.mb-1 {
@@ -115,66 +113,49 @@ h5.mb-3 {
     color: var(--text-primary);
 }
 
-.input-group .form-control {
+.input-group {
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
     border: 1px solid var(--border-color);
-    border-radius: 9999px 0 0 9999px;
-    padding: 12px 16px;
-    background: white;
+}
+
+.input-group .form-control {
+    border: none;
+    padding: 12px 20px;
+    flex: 1;
+    font-size: 15px;
 }
 
 .input-group .btn-primary {
-    border-radius: 0 9999px 9999px 0;
-    background: linear-gradient(135deg, var(--accent-purple), var(--light-purple));
     border: none;
-    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--accent-purple), var(--light-purple));
+    padding: 12px 28px;
     font-weight: 600;
+    color: white;
+    min-width: 100px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
 }
 
 .input-group .btn-primary:hover {
     background: linear-gradient(135deg, #4A0099, #7B2CBF);
+    transform: translateY(-1px);
 }
 
 h4.mb-3 {
     font-size: 20px;
     font-weight: 800;
     color: var(--text-primary);
-    margin: 40px 0 16px !important;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border-color);
+    margin: 32px 0 16px !important;
 }
 
-/* Layout de duas colunas: Reposts à esquerda, Publicações à direita */
-.row.mt-5 {
-    margin-top: 0 !important;
-}
-
-.row + .row.mt-5 {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 32px;
-    margin-top: 32px !important;
-}
-
-.row + .row.mt-5 > .col-12:nth-child(1) {
-    order: 2;
-}
-
-.row + .row.mt-5 > .col-12:nth-child(2) {
-    order: 1;
-}
-
-/* Grid das fotos */
-.row > .col-12 .row,
-.row.mt-5 > .col-12 .row {
+.row > .col-12 .row {
     margin: 0 -8px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
 }
 
 .col-md-4 {
-    padding: 0;
-    margin-bottom: 0;
+    padding: 0 8px;
 }
 
 .card.shadow-sm .card-img-top {
@@ -249,31 +230,27 @@ h4.mb-3 {
     font-size: 13px;
 }
 
-/* Responsivo */
-@media (max-width: 992px) {
-    .row + .row.mt-5 {
-        grid-template-columns: 1fr;
-        gap: 40px;
-    }
-
-    .row + .row.mt-5 > .col-12:nth-child(1) {
-        order: 1;
-    }
-
-    .row + .row.mt-5 > .col-12:nth-child(2) {
-        order: 2;
-    }
-
-    h4.mb-3 {
-        margin-top: 32px !important;
-    }
+.mt-5 {
+    margin-top: 48px !important;
 }
 
 @media (max-width: 768px) {
+    .col-md-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
     .rounded-circle.bg-secondary {
         width: 100px;
         height: 100px;
         font-size: 44px;
+    }
+}
+
+@media (max-width: 576px) {
+    .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
     }
 
     .row.align-items-center {
@@ -282,10 +259,5 @@ h4.mb-3 {
 
     .d-flex.mb-3 {
         justify-content: center;
-    }
-
-    .row > .col-12 .row,
-    .row.mt-5 > .col-12 .row {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     }
 }

@@ -66,11 +66,7 @@
                         {% for photo in user.photos %}
                         <div class="col-md-4 mb-3">
                             <div class="card shadow-sm">
-                                <img src="{{ url_for('static', filename='posts_photos/' ~ photo.file_name) }}"
-                                     class="card-img-top"
-                                     alt="Post de {{ user.username }}"
-                                     style="height: 250px; object-fit: cover;"
-                                     onerror="this.src='https://via.placeholder.com/300x250?text=Imagem+Não+Encontrada'">
+                                <img src="{{ url_for('static', filename='posts_photos/' ~ photo.file_name) }}" class="card-img-top" alt="Post de {{ user.username }}" style="height: 250px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300x250?text=Imagem+Não+Encontrada'">
 
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between mb-2">
@@ -88,9 +84,7 @@
 
                                         {% if user == current_user %}
                                         <div>
-                                            <a class="btn btn-sm btn-outline-danger"
-                                               href="{{ url_for('delete_photo', photo_id=photo.id) }}"
-                                               onclick="return confirm('Tem certeza que deseja excluir esta foto?')">
+                                            <a class="btn btn-sm btn-outline-danger" href="{{ url_for('delete_photo', photo_id=photo.id) }}" onclick="return confirm('Tem certeza que deseja excluir esta foto?')">
                                                 <i class="bi bi-trash"></i>
                                             </a>
                                         </div>
@@ -98,12 +92,10 @@
                                     </div>
 
                                     <div class="d-grid gap-2">
-                                        <a class="btn btn-outline-danger btn-sm"
-                                           href="{{ url_for('like_photo', photo_id=photo.id) }}">
+                                        <a class="btn btn-outline-danger btn-sm" href="{{ url_for('like_photo', photo_id=photo.id) }}">
                                             ❤️ Curtir
                                         </a>
-                                        <a class="btn btn-outline-success btn-sm"
-                                           href="{{ url_for('repost_photo', photo_id=photo.id) }}">
+                                        <a class="btn btn-outline-success btn-sm" href="{{ url_for('repost_photo', photo_id=photo.id) }}">
                                             🔁 Repostar
                                         </a>
                                     </div>
@@ -159,27 +151,19 @@
                                     <small>
                                         <i class="bi bi-person me-1"></i>
                                         Original de
-                                        <a href="{{ url_for('profile', user_id=repost.photo.user.id) }}"
-                                           class="text-decoration-none fw-bold">
+                                        <a href="{{ url_for('profile', user_id=repost.photo.user.id) }}" class="text-decoration-none fw-bold">
                                             {{ repost.photo.user.username }}
                                         </a>
                                     </small>
                                 </div>
 
-                                <img src="{{ url_for('static', filename='posts_photos/' ~ repost.photo.file_name) }}"
-                                     class="card-img-top"
-                                     alt="Repost de {{ repost.photo.user.username }}"
-                                     style="height: 200px; object-fit: cover;"
-                                     onerror="this.src='https://via.placeholder.com/300x200?text=Imagem+Não+Encontrada'">
+                                <img src="{{ url_for('static', filename='posts_photos/' ~ repost.photo.file_name) }}" class="card-img-top" alt="Repost de {{ repost.photo.user.username }}" style="height: 200px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300x200?text=Imagem+Não+Encontrada'">
 
                                 <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <a class="btn btn-outline-danger btn-sm"
-                                           href="{{ url_for('like_photo', photo_id=repost.photo.id) }}">
+                                    <div class="d-flex justify-content-between"><a class="btn btn-outline-danger btn-sm" href="{{ url_for('like_photo', photo_id=repost.photo.id) }}">
                                             ❤️ Curtir ({{ repost.photo.likes|length }})
                                         </a>
-                                        <a class="btn btn-outline-success btn-sm"
-                                           href="{{ url_for('repost_photo', photo_id=repost.photo.id) }}">
+                                        <a class="btn btn-outline-success btn-sm" href="{{ url_for('repost_photo', photo_id=repost.photo.id) }}">
                                             🔁 Repostar
                                         </a>
                                     </div>
@@ -194,19 +178,5 @@
         </div>
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-
-        <style>
-            .card {
-                border-radius: 10px;
-            }
-            .btn-outline-danger:hover {
-                background-color: #dc3545;
-                color: white;
-            }
-            .btn-outline-success:hover {
-                background-color: #198754;
-                color: white;
-            }
-        </style>
     </body>
 {% endblock %}

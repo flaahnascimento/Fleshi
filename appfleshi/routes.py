@@ -82,6 +82,9 @@ def delete_photo(photo_id):
     path = os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config["UPLOAD_FOLDER"], photo.file_name)
     if os.path.exists(path): # se o caminho existir
         os.remove(path) # remove ela
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], photo.file_name)
+        if os.path.exists(file_path) and photo.file_name != "default.png":
+            os.remove(file_path)
     db.session.delete(photo) # apagar a foto
     db.session.commit() # certeza que apaguei
     return redirect(url_for('profile', user_id=current_user.id)) # volta para o perfil do usuario
